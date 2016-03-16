@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-us" ng-app="jewelShop">
+<!-- ng-app is directive which will create an angular application by runing this module (in app.js..one liner that starts with var app) when the document loads).. treats html inside the element as part of the angular app and now we can write expressions to write dynamic operators-->
+  <head>
+    <title>Angular Yo</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="app.js"></script>
+  </head>
+	<body class="container" ng-controller="ShopController as shop">
+    <!-- <div ng-hide="shop.product.soldOut"> -->
+    <!-- Products Container  -->
+    <div class="list-group">
+      <!--  Product Container-->
+      <div class= "list-group-item" ng-repeat="product in shop.products">
+        <!-- <div ng-hide="product.soldOut"> --><!--if product is sold out, we wanna hide it -->
+        <h3>
+          {{product.name}}
+          <em class="pull-right">
+            {{product.price | currency}}
+          </em>
+        </h3>
+        <p>
+          <button class= "pull-right" ng-show="product.canPurchase"> Add to Cart </button>
+        </p>
+        <section class="panel" ng-controller="PanelController as panel">
+
+          <!-- TAB NAVIGATION -->
+          <ul class="nav nav-tabs">
+            <li ng-class="{ active: panel.isSelected(1)}">
+              <a href ng-click = "panel.selectTab(1)">Description</a></li>
+            <li ng-class="{ active: panel.isSelected(2)}">
+              <a href ng-click = "panel.selectTab(2)">Specs</a></li>
+            <li ng-class="{ active: panel.isSelected(3)}">
+              <a href ng-click = "panel.selectTab(3)">Reviews</a></li>
+          </ul>
+
+          <!-- CONTENT FOR EACH TAB -->
+          <product-description ng-show="panel.isSelected(1)">
+          </product-description>
+          <div ng-show="panel.isSelected(2)" product-specs>
+          </div>
+          <div ng-show="panel.isSelected(3)">
+            <ul>
+              <h4>Reviews</h4>
+              <li ng-repeat="review in product.reviews">
+                <blockquote>
+                  <strong> {{review.stars}} Stars</strong>
+                  {{review.body}}
+                  <cite class="clearfix">-{{review.author}} on {{review.createdOn | date}}</cite>
+                </blockquote>
+              </li>
+            </ul>
+
+            <!--  Review Form -->
+            <form name ="reviewForm" ng-controller="ReviewController as reviewCtrl" ng-submit="reviewForm.$valid && reviewCtrl.addReview(product)" novalidate><!-- send in current product that we’re iterating through from Shop Controller.. and validity check to make sure that if valid is false, then addReview wont get called-->
+              <!--  Live Preview -->
+              <blockquote>
+                <strong>{{reviewCtrl.review.stars}} Stars</strong>
+                {{reviewCtrl.review.body}}
+                <cite class="clearfix">—{{reviewCtrl.review.author}}</cite>
+              </blockquote>
+
+              <!--  Review Form -->
+              <h4>Submit a Review</h4>
+              <fieldset class="form-group">
+                <select class="form-control" ng-options="stars for stars in [5,4,3,2,1]"  title="Stars" ng-model="reviewCtrl.review.stars" required>
+                  <option value="">Rate the Product</option>
+                </select>
+              </fieldset>
+              <fieldset class="form-group">
+                <textarea class="form-control" placeholder="Write a short review of the product..." title="Review" ng-model="reviewCtrl.review.body" required></textarea>
+              </fieldset>
+              <fieldset class="form-group">
+                <input ng-model="reviewCtrl.review.author" type="email" class="form-control" required/>
+              </fieldset>
+              <fieldset class="form-group">
+                <input type="submit" class="btn btn-primary pull-right" value="Submit Review" />
+              </fieldset>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>
